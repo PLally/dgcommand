@@ -32,7 +32,7 @@ func main() {
 		return "!"
 	})
 
-	session.AddHandler(prefixedRootHandler.DiscordHandle)
+	session.AddHandler(dgcommand.DiscordHandle(prefixedRootHandler))
 
 
 	sc := make(chan os.Signal, 1)
