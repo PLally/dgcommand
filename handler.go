@@ -3,6 +3,7 @@ package dgcommand
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/plally/dgcommand/parsing"
+	"strings"
 )
 
 type CommandContext struct {
@@ -13,6 +14,38 @@ type CommandContext struct {
 
 type Handler interface {
 	Handle(ctx CommandContext)
+}
+
+// prefix handler
+type PrefixHandler struct {
+	Prefix func(ctx CommandContext) string
+	Callback func(ctx CommandContext)
+}
+
+func (h *PrefixHandler) DiscordHandle(s *discordgo.Session, m *discordgo.MessageCreate) {
+	h.Handle( CommandContext{
+		S: s,
+		M: m,
+		Args: []string{
+			m.Content,
+		},
+	} )
+}
+
+func (h *PrefixHandler) Handle(ctx CommandContext) {
+	prefix := h.Prefix(ctx)
+	if !strings.HasPrefix(ctx.Args[0], prefix) {
+		return
+	}
+	ctx.Args[0] = ctx.Args[0][len(prefix):]
+	h.Callback(ctx)
+}
+
+func WithPrefix(h Handler, getPrefix func(ctx CommandContext) string) PrefixHandler {
+	return PrefixHandler{
+		Prefix: getPrefix,
+		Callback: h.Handle,
+	}
 }
 
 // command router. routes commands based on the first word

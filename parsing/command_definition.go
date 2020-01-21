@@ -86,11 +86,7 @@ func (cmd *CommandDefinition) ParseInput(s string) ([]string, error) {
 	var args []string
 	if len(cmd.Args) < 1 { return args, nil }
 	consumeSpaces(&s)
-	if strings.HasPrefix(s, cmd.Name) {
-		args = append(args, cmd.Name)
-		s = s[len(cmd.Name):]
 
-	}
 	for _, arg := range cmd.Args {
 		if arg.IsVarArg {
 			args = append(args, s)

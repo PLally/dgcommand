@@ -12,11 +12,11 @@ func TestParseDefinition(t *testing.T) {
 		in string
 		result []string
 	} {
-		{"test <arg1> <arg2> [vararg...]", "test arg1 arg2 arg3 continued",
-			[]string{"test", "arg1", "arg2", "arg3 continued", },
+		{"test <arg1> <arg2> [vararg...]", "arg1 arg2 arg3 continued",
+			[]string{"arg1", "arg2", "arg3 continued", },
 		},
-		{"test <arg1> <arg2> [vararg...]", "test arg1 arg2",
-			[]string{"test", "arg1", "arg2", "" },
+		{"test <arg1> <arg2> [vararg...]", "arg1 arg2",
+			[]string{"arg1", "arg2", "" },
 		},
 
 
