@@ -3,6 +3,7 @@ package dgcommand
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/plally/dgcommand/parsing"
+	"github.com/plally/dgcommand/parsing/util"
 	"strings"
 )
 
@@ -64,8 +65,10 @@ func NewCommandHandler() *CommandRoutingHandler {
 
 //command_name [args...]
 func (h *CommandRoutingHandler) Handle(ctx CommandContext) {
-	first := firstWord(ctx.Args[0])
+	first := util.FirstWord(ctx.Args[0])
 	text := ctx.Args[0][len(first):]
+	util.ConsumeSpaces(&text)
+
 	ctx.Args = []string{
 		first,
 		text,
@@ -75,7 +78,6 @@ func (h *CommandRoutingHandler) Handle(ctx CommandContext) {
 	if len(ctx.Args) > 1 {
 		cmd = ctx.Args[0]
 	}
-
 
 
 	handler, ok := h.commands[cmd]

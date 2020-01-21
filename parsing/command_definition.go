@@ -2,6 +2,7 @@ package parsing
 
 import (
 	"errors"
+	"github.com/plally/dgcommand/parsing/util"
 	"regexp"
 	"strings"
 )
@@ -85,7 +86,7 @@ func (cmd *CommandDefinition) String() string {
 func (cmd *CommandDefinition) ParseInput(s string) ([]string, error) {
 	var args []string
 	if len(cmd.Args) < 1 { return args, nil }
-	consumeSpaces(&s)
+	util.ConsumeSpaces(&s)
 
 	for _, arg := range cmd.Args {
 		if arg.IsVarArg {
@@ -105,7 +106,7 @@ func (cmd *CommandDefinition) ParseInput(s string) ([]string, error) {
 
 func parseArg(p *string) (arg string) {
 	i := 0
-	consumeSpaces(p)
+	util.ConsumeSpaces(p)
 
 	i = 0
 	for i < len(*p) {
@@ -132,16 +133,6 @@ func parseArg(p *string) (arg string) {
 	return s
 }
 
-func consumeSpaces(p *string) {
-	i := 0
-	for i <len(*p) {
-		if (*p)[i] != ' '{
-			break
-		}
-		i++
-	}
-	*p = (*p)[i:]
-}
 
 func parseCommandDefinitionTokens(tokens []token) CommandDefinition {
 	c := CommandDefinition{
