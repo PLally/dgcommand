@@ -56,6 +56,9 @@ func NewCommandHandler() *CommandRoutingHandler {
 	}
 }
 
+func (h *CommandRoutingHandler) Commands() map[string]Handler {
+	return h.commands
+}
 
 //command_name [args...]
 func (h *CommandRoutingHandler) Handle(ctx CommandContext) {
@@ -79,6 +82,7 @@ func (h *CommandRoutingHandler) Handle(ctx CommandContext) {
 	ctx.Args = ctx.Args[1:]
 	handler.Handle(ctx)
 }
+
 
 
 
