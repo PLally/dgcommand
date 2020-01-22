@@ -7,12 +7,6 @@ import (
 	"strings"
 )
 
-type CommandContext struct {
-	M *discordgo.MessageCreate
-	Args    []string
-	S *discordgo.Session
-}
-
 type Handler interface {
 	Handle(ctx CommandContext)
 }
