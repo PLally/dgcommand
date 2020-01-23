@@ -8,7 +8,7 @@ import (
 )
 
 // TODO write a more efficient definition parser that doesnt use regex
-
+// TODO support --flags
 var (
 	requiredArg = regexp.MustCompile(`^<[a-zA-Z][a-zA-Z0-9]*>`)
 	optionalArg = regexp.MustCompile(`^\[[a-zA-Z][a-zA-Z0-9]*\]`)
