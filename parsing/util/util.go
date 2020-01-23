@@ -12,11 +12,10 @@ func FirstWord(s string) string {
 	}
 }
 
-
 func ConsumeSpaces(p *string) {
 	i := 0
-	for i <len(*p) {
-		if (*p)[i] != ' '{
+	for i < len(*p) {
+		if (*p)[i] != ' ' {
 			break
 		}
 		i++
