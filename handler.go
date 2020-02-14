@@ -11,21 +11,28 @@ type Handler interface {
 	Handle(ctx CommandContext)
 }
 
+type HandlerFunc func(ctx CommandContext)
+
+func (h HandlerFunc) Handle(ctx CommandContext) {
+	h(ctx)
+}
+
 // prefix handler
 type PrefixHandler struct {
-	Prefix func(ctx CommandContext) string
+	Prefix   func(ctx CommandContext) string
 	Callback func(ctx CommandContext)
 }
 
 func DiscordHandle(h Handler) func(*discordgo.Session, *discordgo.MessageCreate) {
-	return func(s  *discordgo.Session, m *discordgo.MessageCreate) {
-		h.Handle( CommandContext{
+
+	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		h.Handle(CommandContext{
 			S: s,
 			M: m,
 			Args: []string{
 				m.Content,
 			},
-		} )
+		})
 	}
 }
 
@@ -40,7 +47,7 @@ func (h *PrefixHandler) Handle(ctx CommandContext) {
 
 func WithPrefix(h Handler, getPrefix func(ctx CommandContext) string) *PrefixHandler {
 	return &PrefixHandler{
-		Prefix: getPrefix,
+		Prefix:   getPrefix,
 		Callback: h.Handle,
 	}
 }
@@ -76,15 +83,13 @@ func (h *CommandRoutingHandler) Handle(ctx CommandContext) {
 		cmd = ctx.Args[0]
 	}
 
-
 	handler, ok := h.commands[cmd]
-	if !ok { return }
+	if !ok {
+		return
+	}
 	ctx.Args = ctx.Args[1:]
 	handler.Handle(ctx)
 }
-
-
-
 
 func (h *CommandRoutingHandler) AddHandler(name string, handler Handler) {
 	h.commands[name] = handler
@@ -106,7 +111,7 @@ func (cmd *Command) Handle(ctx CommandContext) {
 }
 func NewCommand(definition string, callback func(ctx CommandContext)) *Command {
 	return &Command{
-		Callback: callback,
+		Callback:          callback,
 		CommandDefinition: parsing.NewCommandDefinition(definition),
 	}
 }
