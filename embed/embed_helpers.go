@@ -29,6 +29,12 @@ func (e *Embed) SetImageUrl(url string) {
 	}
 }
 
+func (e *Embed) SetFooter(footer, iconUrl, proxyIconUrl  string) {
+	e.Footer = &discordgo.MessageEmbedFooter{footer, iconUrl, proxyIconUrl}
+}
+func (e *Embed) SetDescription(desc string) {
+	e.Description = desc
+}
 func (e *Embed) SetThumbnailUrl(url string) {
 	e.Thumbnail = &discordgo.MessageEmbedThumbnail{
 		URL: url,

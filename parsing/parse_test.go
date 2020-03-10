@@ -17,6 +17,9 @@ func TestParseDefinition(t *testing.T) {
 		{"test <arg1> <arg2> [vararg...]", "arg1 arg2",
 			[]string{"arg1", "arg2", ""},
 		},
+		{"help [varag...]", "",
+			[]string{""},
+		},
 	}
 	for _, d := range definitionStrings {
 		c := NewCommandDefinition(d.def)
