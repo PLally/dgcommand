@@ -28,7 +28,7 @@ func main() {
 	cmd := dgcommand.NewCommand("test <required> [optional] [vararg...]", testCommand)
 	rootHandler.AddHandler(cmd.Name, cmd)
 
-	prefixedRootHandler := dgcommand.WithPrefix(rootHandler, func(dgcommand.CommandContext) string {
+	prefixedRootHandler := dgcommand.WithPrefix(rootHandler, func(dgcommand.Context) string {
 		return "!"
 	})
 
@@ -42,6 +42,6 @@ func main() {
 	session.Close()
 }
 
-func testCommand(ctx dgcommand.CommandContext) {
+func testCommand(ctx dgcommand.Context) {
 	fmt.Println(strings.Join(ctx.Args, ", "))
 }
