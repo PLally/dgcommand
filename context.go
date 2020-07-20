@@ -1,74 +1,56 @@
 package dgcommand
 
 import (
+	"context"
 	"github.com/bwmarrin/discordgo"
 	"github.com/plally/dgcommand/embed"
 	log "github.com/sirupsen/logrus"
 	"io"
 )
 
-type Context interface {
-	Error(interface{})
-
-	Reply(string)
-	SendFile(name string, r io.Reader)
-	SendEmbed(*embed.Embed)
-
-	Args() []string
-	SetArgs([]string)
-
-	Message() *discordgo.Message
-}
-
-
-// a struct that other structs can embed to implement the context args functions
-type ArgContainer struct {
+type CommandContext struct {
+	context.Context
+	Session *discordgo.Session
+	Message *discordgo.MessageCreate
 	args []string
 }
 
-func (c *ArgContainer) Args() []string {
-	return c.args
+func (ctx *CommandContext) Args() []string {
+	return ctx.args
 }
 
-func (c *ArgContainer) SetArgs(args []string) {
-	c.args = args
+func (ctx *CommandContext) WithValue(k, v interface{}) {
+	ctx.Context = context.WithValue(ctx.Context, k, v)
+}
+func (ctx *CommandContext) SetArgs(args []string) {
+	ctx.args = args
 }
 
 
 // context object for discordgo
-type DiscordContext struct {
-	*ArgContainer
-	M    *discordgo.MessageCreate
-	S    *discordgo.Session
+func (ctx *CommandContext) Reply(msg string) {
+	ctx.Session.ChannelMessageSend(ctx.Message.ChannelID, msg)
 }
 
-func (ctx *DiscordContext) Reply(msg string) {
-	ctx.S.ChannelMessageSend(ctx.M.ChannelID, msg)
-}
-
-func (ctx *DiscordContext) Error(err interface{}) {
-	log.Errorf("error on message %v\n%v", ctx.M.Content, err)
+func (ctx *CommandContext) Error(err interface{}) {
+	log.Errorf("error on message %v\n%v", ctx.Message.Content, err)
 	ctx.Reply("Encountered an unhandled error")
 }
 
-func (ctx *DiscordContext) SendFile(name string, r io.Reader) {
-	ctx.S.ChannelFileSend(ctx.M.ChannelID, name, r)
+func (ctx *CommandContext) SendFile(name string, r io.Reader) {
+	ctx.Session.ChannelFileSend(ctx.Message.ChannelID, name, r)
 }
 
-func (ctx *DiscordContext) SendEmbed(e *embed.Embed) {
-	ctx.S.ChannelMessageSendEmbed(ctx.M.ChannelID, e.MessageEmbed)
+func (ctx *CommandContext) SendEmbed(e *embed.Embed) {
+	ctx.Session.ChannelMessageSendEmbed(ctx.Message.ChannelID, e.MessageEmbed)
 }
 
-func (ctx *DiscordContext) Message() *discordgo.Message {
-	return ctx.M.Message
-}
-
-func CreateDiscordContext(s *discordgo.Session, m *discordgo.MessageCreate) *DiscordContext {
-	return &DiscordContext{
-		ArgContainer: &ArgContainer{args: []string{
-			m.Content,
-		}},
-		M:           m,
-		S:           s,
+func CreatContext(s *discordgo.Session, m *discordgo.MessageCreate) CommandContext{
+	ctx := CommandContext{
+		Context: context.Background(),
+		Session: s,
+		Message: m,
 	}
+	ctx.SetArgs([]string{m.Content})
+	return ctx
 }

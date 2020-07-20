@@ -10,7 +10,7 @@ type Command struct {
 	parsing.CommandDefinition
 }
 
-func (cmd *Command) Handle(ctx Context) {
+func (cmd *Command) Handle(ctx CommandContext) {
 	args, err := cmd.ParseInput(ctx.Args()[0])
 	if err != nil {
 		ctx.Error(err)

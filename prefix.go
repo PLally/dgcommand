@@ -5,7 +5,7 @@ import "strings"
 
 
 func OnPrefix(prefix string, next Handler) HandlerFunc {
-	return func(ctx Context) {
+	return func(ctx CommandContext) {
 		args := ctx.Args()
 		if !strings.HasPrefix(args[0], prefix) {
 			return
