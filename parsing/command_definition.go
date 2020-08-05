@@ -2,6 +2,7 @@ package parsing
 
 import (
 	"errors"
+	"fmt"
 	"github.com/plally/dgcommand/parsing/util"
 	"regexp"
 	"strings"
@@ -17,6 +18,9 @@ var (
 	word        = regexp.MustCompile("^[a-zA-Z0-9]+")
 )
 
+var (
+	ErrMissingArg = errors.New("Missing required arg")
+)
 type token struct {
 	tokenPattern *regexp.Regexp
 	value        string
@@ -103,7 +107,7 @@ func (cmd *CommandDefinition) ParseInput(s string) ([]string, error) {
 		}
 		a := parseArg(&s)
 		if a == "" {
-			return args, errors.New("Missing required arg " + arg.Name)
+			return args, fmt.Errorf("%w: %v", ErrMissingArg, arg.Name)
 		}
 		args = append(args, a)
 

@@ -12,6 +12,7 @@ type CommandContext struct {
 	context.Context
 	Session *discordgo.Session
 	Message *discordgo.MessageCreate
+	OnError func(ctx CommandContext, err error) error
 	args []string
 }
 
@@ -32,7 +33,11 @@ func (ctx *CommandContext) Reply(msg string) {
 	ctx.Session.ChannelMessageSend(ctx.Message.ChannelID, msg)
 }
 
-func (ctx *CommandContext) Error(err interface{}) {
+func (ctx *CommandContext) Error(err error) {
+	if ctx.OnError != nil {
+		err = ctx.OnError(*ctx, err)
+	}
+	if err == nil { return }
 	log.Errorf("error on message %v\n%v", ctx.Message.Content, err)
 	ctx.Reply("Encountered an unhandled error")
 }
